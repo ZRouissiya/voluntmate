@@ -6,13 +6,13 @@ class User(AbstractUser):
         ('M', 'Male'),
         ('F', 'Female')
     ]
-    name = models.CharField(max_length=200, null=True)
-    email = models.EmailField(unique=True, null=False)
+    username = models.CharField(max_length=200, null=True)
+    email = models.EmailField(unique=True, null=True)
     age = models.IntegerField(null=True)
-    gendre=models.CharField(max_length=1,choices=SEXE_CHOICES,default='M',null=False)
+    gendre=models.CharField(max_length=1,choices=SEXE_CHOICES,default='M',null=True)
     avatar = models.ImageField(null=True, default="avatar.svg")
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ['username']
 
 class Type(models.Model):
     name = models.CharField(max_length=200)

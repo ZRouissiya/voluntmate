@@ -4,7 +4,7 @@ from django.contrib.auth import authenticate, login
 from .models import User,Post,Type,Message
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm
+from .forms import PostForm,UserForm
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -85,3 +85,35 @@ def post(request, pk):
     context = {'post': post, 'post_messages': post_messages,
                'participants': participants}
     return render(request, 'base/post.html', context)
+
+def typesPage(request):
+    q = request.GET.get('q') if request.GET.get('q') != None else ''
+    types = Type.objects.filter(name__icontains=q)
+    return render(request, 'base/types.html', {'types': types})
+
+def activityPage(request):
+    post_messages = Message.objects.all()
+    return render(request, 'base/activity.html', {'post_messages': post_messages})
+
+
+def userProfile(request, pk):
+    user = User.objects.get(id=pk)
+    posts = user.post_set.all()
+    post_messages = user.message_set.all()
+    types = Type.objects.all()
+    context = {'user': user, 'posts': posts,
+               'post_messages': post_messages, 'types': types}
+    return render(request, 'base/profile.html', context)
+
+@login_required(login_url='login')
+def updateUser(request):
+    user = request.user
+    form = UserForm(instance=user)
+
+    if request.method == 'POST':
+        form = UserForm(request.POST, request.FILES, instance=user)
+        if form.is_valid():
+            form.save()
+            return redirect('user-profile', pk=user.id)
+
+    return render(request, 'base/update-user.html', {'form': form})

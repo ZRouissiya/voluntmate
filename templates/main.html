@@ -22,6 +22,20 @@
         {% endfor %}
     </ul>
     {% endif %}
+    {% if form.errors %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for field in form %}
+                {% if field.errors %}
+                    <li>{{ field.label }}: {{ field.errors|striptags }}</li>
+                {% endif %}
+            {% endfor %}
+            {% if form.non_field_errors %}
+                <li>{{ form.non_field_errors }}</li>
+            {% endif %}
+        </ul>
+    </div>
+{% endif %}
 
     {% block content %}
 

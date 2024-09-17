@@ -19,7 +19,7 @@
         </div>
         {% if post.owner == request.user %}
         <div class="room__topRight">
-          <a href="#">
+          <a href="{% url 'update-post' post.id %}">
             <svg enable-background="new 0 0 24 24" height="32" viewBox="0 0 24 24" width="32"
               xmlns="http://www.w3.org/2000/svg">
               <title>edit</title>
@@ -38,7 +38,7 @@
               </g>
             </svg>
           </a>
-          <a href="#">
+          <a href="{% url 'delete-post' post.id %}">
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
               <title>remove</title>
               <path
@@ -58,7 +58,7 @@
           </div>
           <div class="room__hosted">
             <p>Hosted By</p>
-            <a href="#" class="room__author">
+            <a href="{% url 'user-profile' post.owner.id %}" class="room__author">
               <div class="avatar avatar--small">
                 <img src="{{post.owner.avatar.url}}" />
               </div>
@@ -79,7 +79,7 @@
             <div class="thread">
               <div class="thread__top">
                 <div class="thread__author">
-                  <a href="{# url 'user-profile' message.user.id #}" class="thread__authorInfo">
+                  <a href="{% url 'user-profile' message.user.id %}" class="thread__authorInfo">
                     <div class="avatar avatar--small">
                       <img src="{{message.user.avatar.url}}" />
                     </div>
@@ -89,7 +89,7 @@
                 </div>
 
                 {% if request.user == message.user %}
-                <a href="{# url 'delete-message' message.id #}">
+                <a href="{% url 'delete-message' message.id %}">
                   <div class="thread__delete">
                     <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
                       <title>remove</title>
@@ -124,7 +124,7 @@
       <h3 class="participants__top">Participants <span>({{participants.count}} Joined)</span></h3>
       <div class="participants__list scroll">
         {% for user in participants %}
-        <a href="{#  url 'user-profile' user.id #}" class="participant">
+        <a href="{%  url 'user-profile' user.id %}" class="participant">
           <div class="avatar avatar--medium">
             <img src="{{user.avatar.url}}" />
           </div>

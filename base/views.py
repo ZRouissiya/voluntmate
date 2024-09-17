@@ -137,3 +137,47 @@ def registerPage(request):
 def logoutUser(request):
     logout(request)
     return redirect('home')
+
+@login_required(login_url='login')
+def updatePost(request, pk):
+    post = Post.objects.get(id=pk)
+    form = PostForm(instance=post)
+    types = Type.objects.all()
+    if request.user != post.owner:
+        return redirect('home')
+
+    if request.method == 'POST':
+        type_name = request.POST.get('type')
+        type, created = Type.objects.get_or_create(name=type_name)
+        post.name = request.POST.get('name')
+        post.type = type
+        post.description = request.POST.get('description')
+        post.save()
+        return redirect('home')
+
+    context = {'form': form, 'types': types, 'post': post}
+    return render(request, 'base/post_form.html', context)
+
+@login_required(login_url='login')
+def deletePost(request, pk):
+    post = Post.objects.get(id=pk)
+
+    if request.user != post.owner:
+        return redirect('home')
+
+    if request.method == 'POST':
+        post.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj': post})
+
+@login_required(login_url='login')
+def deleteMessage(request, pk):
+    message = Message.objects.get(id=pk)
+
+    if request.user != message.user:
+        return redirect('home')
+
+    if request.method == 'POST':
+        message.delete()
+        return redirect('home')
+    return render(request, 'base/delete.html', {'obj': message})

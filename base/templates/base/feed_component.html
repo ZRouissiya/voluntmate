@@ -1,7 +1,7 @@
 {% for post in posts %}
 <div class="roomListRoom">
     <div class="roomListRoom__header">
-        <a href="#" class="roomListRoom__author">
+        <a href="{%  url 'user-profile' user.id %}" class="roomListRoom__author">
             <div class="avatar avatar--small">
                 <img src="{{post.owner.avatar.url}}" />
             </div>

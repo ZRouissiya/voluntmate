@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import User,Post,Type,Message
+from .models import User,Post,Type,Message,Images
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
-from .forms import PostForm,UserForm,MyUserCreationForm
+from .forms import PostForm,UserForm,MyUserCreationForm,ImageForm
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -52,27 +52,35 @@ def loginPage(request):
 @login_required(login_url='login')
 def createPost(request):
     form = PostForm()
+    image_form=ImageForm()
     type = Type.objects.all()
     if request.method == 'POST':
         type_name = request.POST.get('type')
         type, created = Type.objects.get_or_create(name=type_name)
 
-        Post.objects.create(
+        post = Post.objects.create(
             owner=request.user,
             type=type,
             name=request.POST.get('name'),
             description=request.POST.get('description'),
         )
+        if request.FILES.getlist('images'):
+                for image in request.FILES.getlist('images'):
+                    Images.objects.create(
+                        post=post,
+                        user=request.user, 
+                        image=image
+                    )
         return redirect('home')
 
-    context = {'form': form, 'types': type}
+    context = {'form': form, 'types': type,'image_form':image_form}
     return render(request, 'base/post_form.html', context)
 
 def post(request, pk):
     post = Post.objects.get(id=pk)
     post_messages = post.message_set.all()
     participants = post.participants.all()
-
+    images=post.images.all()
     if request.method == 'POST':
         message = Message.objects.create(
             user=request.user,
@@ -83,7 +91,7 @@ def post(request, pk):
         return redirect('post', pk=post.id)
 
     context = {'post': post, 'post_messages': post_messages,
-               'participants': participants}
+               'participants': participants, 'images':images}
     return render(request, 'base/post.html', context)
 
 def typesPage(request):
@@ -115,7 +123,6 @@ def updateUser(request):
         if form.is_valid():
             form.save()
             return redirect('user-profile', pk=user.id)
-
     return render(request, 'base/update-user.html', {'form': form})
 
 def registerPage(request):
@@ -142,6 +149,7 @@ def logoutUser(request):
 def updatePost(request, pk):
     post = Post.objects.get(id=pk)
     form = PostForm(instance=post)
+    images=post.images.all()
     types = Type.objects.all()
     if request.user != post.owner:
         return redirect('home')
@@ -153,9 +161,15 @@ def updatePost(request, pk):
         post.type = type
         post.description = request.POST.get('description')
         post.save()
+        for image in request.FILES.getlist('images'):
+                Images.objects.create(
+                    post=post,
+                    user=request.user,  
+                    image=image
+                )
         return redirect('home')
 
-    context = {'form': form, 'types': types, 'post': post}
+    context = {'form': form, 'types': types, 'post': post,'images':images}
     return render(request, 'base/post_form.html', context)
 
 @login_required(login_url='login')

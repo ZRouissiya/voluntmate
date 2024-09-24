@@ -1,4 +1,4 @@
-from .models import Post,User
+from .models import Post,User,Images
 from django.forms import ModelForm
 from django.contrib.auth.forms import UserCreationForm
 
@@ -18,4 +18,10 @@ class MyUserCreationForm(UserCreationForm):
     class Meta:
         model = User
         fields = [ 'username','email','gendre', 'age']
+
+class ImageForm(ModelForm):
+    class Meta:
+        model = Images
+        fields = ['image'] 
+
         

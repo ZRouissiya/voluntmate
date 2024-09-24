@@ -34,6 +34,9 @@ class Post(models.Model):
     class Meta:
         ordering = ['-updated', '-created']
 
+    def images(self):
+        return Images.objects.filter(post=self)
+    
     def __str__(self):
         return self.name
     
@@ -49,3 +52,17 @@ class Message(models.Model):
 
     def __str__(self):
         return self.body[0:50]
+
+class Images(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='images')
+    image = models.ImageField(upload_to='images/', null=True)
+    updated = models.DateTimeField(auto_now=True)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-updated', '-created']
+
+    def __str__(self):
+        return str(self.image)
+

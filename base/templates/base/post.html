@@ -8,7 +8,8 @@
       <div class="room__top">
         <div class="room__topLeft">
           <a href="{% url 'home' %}">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32"
+              height="32" viewBox="0 0 32 32">
               <title>arrow-left</title>
               <path
                 d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z">
@@ -20,11 +21,13 @@
         {% if post.owner == request.user %}
         <div class="room__topRight">
           <a href="{% url 'update-post' post.id %}">
-            <svg enable-background="new 0 0 24 24" height="32" viewBox="0 0 24 24" width="32"
+            <svg enable-background="new 0 0 24 24" height="32"
+              viewBox="0 0 24 24" width="32"
               xmlns="http://www.w3.org/2000/svg">
               <title>edit</title>
               <g>
-                <path d="m23.5 22h-15c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h15c.276 0 .5.224.5.5s-.224.5-.5.5z" />
+                <path
+                  d="m23.5 22h-15c-.276 0-.5-.224-.5-.5s.224-.5.5-.5h15c.276 0 .5.224.5.5s-.224.5-.5.5z" />
               </g>
               <g>
                 <g>
@@ -39,7 +42,8 @@
             </svg>
           </a>
           <a href="{% url 'delete-post' post.id %}">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32"
+              height="32" viewBox="0 0 32 32">
               <title>remove</title>
               <path
                 d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z">
@@ -58,7 +62,8 @@
           </div>
           <div class="room__hosted">
             <p>Hosted By</p>
-            <a href="{% url 'user-profile' post.owner.id %}" class="room__author">
+            <a href="{% url 'user-profile' post.owner.id %}"
+              class="room__author">
               <div class="avatar avatar--small">
                 <img src="{{post.owner.avatar.url}}" />
               </div>
@@ -66,32 +71,44 @@
             </a>
           </div>
           <div class="room__details">
-           {{post.description}}
+            {{post.description}}
           </div>
           <span class="room__topics">{{post.type}}</span>
+          <div class="images">
+            {% if images %}
+            {% for image in images %}
+            <img src="{{ image.image.url }}" alt="Post Image"
+              style="width: 300px; height: auto; margin: 10px;">
+            {% endfor %}
+            {% else %}
+            <p>No images available for this post.</p>
+            {% endif %}
+          </div>
         </div>
 
         <div class="room__conversation">
           <div class="threads scroll">
 
-
             {% for message in post_messages %}
             <div class="thread">
               <div class="thread__top">
                 <div class="thread__author">
-                  <a href="{% url 'user-profile' message.user.id %}" class="thread__authorInfo">
+                  <a href="{% url 'user-profile' message.user.id %}"
+                    class="thread__authorInfo">
                     <div class="avatar avatar--small">
                       <img src="{{message.user.avatar.url}}" />
                     </div>
                     <span>@{{message.user.username}}</span>
                   </a>
-                  <span class="thread__date">{{message.created|timesince}} ago</span>
+                  <span class="thread__date">{{message.created|timesince}}
+                    ago</span>
                 </div>
 
                 {% if request.user == message.user %}
                 <a href="{% url 'delete-message' message.id %}">
                   <div class="thread__delete">
-                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
+                      width="32" height="32" viewBox="0 0 32 32">
                       <title>remove</title>
                       <path
                         d="M27.314 6.019l-1.333-1.333-9.98 9.981-9.981-9.981-1.333 1.333 9.981 9.981-9.981 9.98 1.333 1.333 9.981-9.98 9.98 9.98 1.333-1.333-9.98-9.98 9.98-9.981z">
@@ -111,7 +128,7 @@
 
       </div>
       <div class="room__message">
-        <form action="" method="POST">
+        <form action method="POST">
           {% csrf_token %}
           <input name="body" placeholder="Write your message here..." />
         </form>
@@ -121,7 +138,8 @@
 
     <!--   Start -->
     <div class="participants">
-      <h3 class="participants__top">Participants <span>({{participants.count}} Joined)</span></h3>
+      <h3 class="participants__top">Participants <span>({{participants.count}}
+          Joined)</span></h3>
       <div class="participants__list scroll">
         {% for user in participants %}
         <a href="{%  url 'user-profile' user.id %}" class="participant">

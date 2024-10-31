@@ -1,18 +1,21 @@
-{% extends 'main.html' %}
-
-{% block content %}
+{% extends 'main.html' %} {% block content %}
 <main class="create-room layout">
   <div class="container">
     <div class="layout__box">
       <div class="layout__boxHeader">
         <div class="layout__boxTitle">
           <a href="{{request.META.HTTP_REFERER}}">
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="32"
-              height="32" viewBox="0 0 32 32">
+            <svg
+              version="1.1"
+              xmlns="http://www.w3.org/2000/svg"
+              width="32"
+              height="32"
+              viewBox="0 0 32 32"
+            >
               <title>arrow-left</title>
               <path
-                d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z">
-              </path>
+                d="M13.723 2.286l-13.723 13.714 13.719 13.714 1.616-1.611-10.96-10.96h27.625v-2.286h-27.625l10.965-10.965-1.616-1.607z"
+              ></path>
             </svg>
           </a>
           <h3>Create/Update Volunteer Post</h3>
@@ -23,8 +26,13 @@
           {% csrf_token %}
           <div class="form__group">
             <label for="room_topic">Enter a Topic</label>
-            <input required type="text" value="{{post.type.name}}" name="type"
-              list="topic-list" />
+            <input
+              required
+              type="text"
+              value="{{post.type.name}}"
+              name="type"
+              list="topic-list"
+            />
             <label for="room_topic">Enter images </label>
 
             <input type="file" name="images" multiple="multiple" />
@@ -36,7 +44,6 @@
               </select>
             </datalist>
           </div>
-
           <div class="form__group">
             <label for="room_name">Post Title</label>
             {{form.name}}
@@ -46,9 +53,71 @@
             <label for="room_description">Volunteer Work Description</label>
             {{form.description}}
           </div>
+          <div class="form__group">
+            <label for="room_description">Enter Place Name :</label>
+            {{form.place_name}}
+          </div>
+          <label for="room_map">Enter Place Location : </label>
+          <div class="mapholder">
+            <div id="map"></div>
+
+            <!-- prettier-ignore -->
+            <script>(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+              ({key: "{{key}}", v: "weekly"});</script>
+
+            <script>
+              async function initMap() {
+                const { Map } = await google.maps.importLibrary("maps");
+                const myLatlng = {
+                  lat: 33.77463447882866,
+                  lng: -7.079857925474199,
+                };
+                const map = new google.maps.Map(
+                  document.getElementById("map"),
+                  {
+                    zoom: 7,
+                    center: myLatlng,
+                  }
+                );
+
+                marker = new google.maps.Marker({
+                  position: myLatlng,
+                  map: map,
+                  title: "Selected Location",
+                });
+                map.addListener("click", function (event) {
+                  placeMarker(event.latLng);
+                  updateHiddenFields(event.latLng.lat(), event.latLng.lng());
+                });
+                updateHiddenFields(myLatlng.lat, myLatlng.lng);
+                function updateHiddenFields(lat, lng) {
+                  document.getElementById("latField").value = lat;
+                  document.getElementById("lngField").value = lng;
+                }
+              }
+
+              function placeMarker(location) {
+                if (marker) {
+                  marker.setPosition(location);
+                } else {
+                  marker = new google.maps.Marker({
+                    position: location,
+                    map: map,
+                    title: "Selected Location",
+                  });
+                }
+              }
+
+              initMap();
+            </script>
+          </div>
+          <input type="hidden" name="lat" id="latField" />
+          <input type="hidden" name="lng" id="lngField" />
+          
           <div class="form__action">
-            <a class="btn btn--dark"
-              href="{{request.META.HTTP_REFERER}}">Cancel</a>
+            <a class="btn btn--dark" href="{{request.META.HTTP_REFERER}}"
+              >Cancel</a
+            >
             <button class="btn btn--main" type="submit">Submit</button>
           </div>
         </form>

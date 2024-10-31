@@ -56,6 +56,8 @@ def createPost(request):
     form = PostForm()
     image_form=ImageForm()
     type = Type.objects.all()
+    key = settings.GOOGLE_API_KEY
+
     if request.method == 'POST':
         type_name = request.POST.get('type')
         type, created = Type.objects.get_or_create(name=type_name)
@@ -65,6 +67,9 @@ def createPost(request):
             type=type,
             name=request.POST.get('name'),
             description=request.POST.get('description'),
+            lat=request.POST.get('lat'),
+            lng=request.POST.get('lng')   ,
+            place_name=request.POST.get('place_name')     
         )
         if request.FILES.getlist('images'):
                 for image in request.FILES.getlist('images'):
@@ -75,7 +80,7 @@ def createPost(request):
                     )
         return redirect('home')
 
-    context = {'form': form, 'types': type,'image_form':image_form}
+    context = {'form': form, 'types': type,'image_form':image_form, 'key':key}
     return render(request, 'base/post_form.html', context)
 
 def post(request, pk):

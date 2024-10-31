@@ -30,7 +30,10 @@ class Post(models.Model):
         User, related_name='participants', blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)
-
+    lat = models.CharField(max_length=200,blank=True, null=True)
+    lng = models.CharField(max_length=200,blank=True, null=True)
+    place_name=models.CharField(max_length=500)
+    
     class Meta:
         ordering = ['-updated', '-created']
 

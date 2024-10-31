@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from .models import User,Post,Type,Message,Images
+from .models import *
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from .forms import PostForm,UserForm,MyUserCreationForm,ImageForm
+import googlemaps
+from django.conf import settings
 
 def home(request):
     q = request.GET.get('q') if request.GET.get('q') != None else ''
@@ -81,6 +83,8 @@ def post(request, pk):
     post_messages = post.message_set.all()
     participants = post.participants.all()
     images=post.images.all()
+    key = settings.GOOGLE_API_KEY
+
     if request.method == 'POST':
         message = Message.objects.create(
             user=request.user,
@@ -89,9 +93,18 @@ def post(request, pk):
         )
         post.participants.add(request.user)
         return redirect('post', pk=post.id)
-
-    context = {'post': post, 'post_messages': post_messages,
-               'participants': participants, 'images':images}
+     
+    context = {
+                'post': post,
+                'post_messages': post_messages,
+                'participants': participants,
+                'images':images,
+                'key':key,
+                'lat': float(post.lat),
+                'lng' : float(post.lng),
+                'place_name':post.place_name
+                 }
+    
     return render(request, 'base/post.html', context)
 
 def typesPage(request):
@@ -195,3 +208,4 @@ def deleteMessage(request, pk):
         message.delete()
         return redirect('home')
     return render(request, 'base/delete.html', {'obj': message})
+

@@ -7,7 +7,7 @@ class PostForm(ModelForm):
     class Meta:
         model = Post
         fields = '__all__'
-        exclude = ['owner', 'participants']
+        exclude = ['owner', 'participants', 'lat', 'lng']
 
 class UserForm(ModelForm):
     class Meta:

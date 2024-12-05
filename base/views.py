@@ -68,7 +68,7 @@ def createPost(request):
             name=request.POST.get('name'),
             description=request.POST.get('description'),
             lat=request.POST.get('lat'),
-            lng=request.POST.get('lng')   ,
+            lng=request.POST.get('lng'),
             place_name=request.POST.get('place_name')     
         )
         if request.FILES.getlist('images'):
@@ -169,6 +169,7 @@ def updatePost(request, pk):
     form = PostForm(instance=post)
     images=post.images.all()
     types = Type.objects.all()
+    key = settings.GOOGLE_API_KEY
     if request.user != post.owner:
         return redirect('home')
 
@@ -177,7 +178,10 @@ def updatePost(request, pk):
         type, created = Type.objects.get_or_create(name=type_name)
         post.name = request.POST.get('name')
         post.type = type
+        post.lat=request.POST.get('lat')
+        post.lng=request.POST.get('lng')
         post.description = request.POST.get('description')
+        post.place_name=request.POST.get('place_name')
         post.save()
         for image in request.FILES.getlist('images'):
                 Images.objects.create(
